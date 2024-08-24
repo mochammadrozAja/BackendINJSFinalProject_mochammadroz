@@ -30,7 +30,7 @@ module.exports = {
       role: {
         type: Sequelize.STRING,
         allowNull:false,
-        defaultValue:"customer",
+        defaultValue:"admin",
       },
       address: {
         type: Sequelize.TEXT

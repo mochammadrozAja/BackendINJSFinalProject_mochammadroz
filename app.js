@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express')
 const app = express()
 const port = 3000
@@ -12,7 +14,7 @@ app.use("/",require("./routes"));
 app.use((err, req, res, next) => {
   console.log(err)
   res.status(500).json({
-    error: "ServerError",
+    error: "Unauthorized",
     message: err.message,
   });
 })
