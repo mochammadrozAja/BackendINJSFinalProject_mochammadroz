@@ -1,4 +1,3 @@
-const { sign } = require("jsonwebtoken");
 const { Bookmark, Movie, User } = require("../models");
 
 exports.index = async (req, res, next) => {
@@ -36,6 +35,12 @@ exports.create = async (req, res, next) => {
       id:bookmark.id,userId:bookmark.userId,movieId:bookmark.movieId,movie:movie.title
     });
   } catch (error) {
+    if(error.message=="Validation error") {
+      return res.status(200).json({
+        message: 'bookmark already exists'
+      });
+    }
     next(error);
+    // console.log(error.message,"ardian error");
   }
 };
