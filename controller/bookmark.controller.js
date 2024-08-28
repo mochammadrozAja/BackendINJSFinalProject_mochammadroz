@@ -36,8 +36,24 @@ exports.create = async (req, res, next) => {
     });
   } catch (error) {
     if(error.message=="Validation error") {
+      const movie = await Movie.findOne({
+        where: { id },
+      });
+      
+      const options = {
+        include: ["movie"],
+      };
+    
+      if (reqUserId) {
+        options.where = {
+          userId: reqUserId,
+        };
+      }
+
+      const bookmarks = await Bookmark.findOne(options);
       return res.status(200).json({
-        message: 'bookmark already exists'
+        message: 'bookmark already exists',
+        id:bookmarks.id,userId:bookmarks.userId,movieId:bookmarks.movieId,movie:movie.title
       });
     }
     next(error);
