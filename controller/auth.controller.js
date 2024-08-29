@@ -30,13 +30,15 @@ exports.register = async (req, res, next) => {
     const user = await User.create({ name, username, email, role, phoneNumber, address, password: hashedPassword });
     res.status(201).json({
       message: "Success creating new user",
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
+      data: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        phoneNumber: user.phoneNumber,
+        address: user.address, 
+      }
     });
   } catch (error) {
     next(error);
@@ -53,7 +55,11 @@ exports.login = async (req, res, next) => {
     }
 
     const accessToken = generateToken(user);
-    res.status(200).json({ accessToken, name: user.name, role: user.role, id: user.id });
+    res.status(200).json({ accessToken, 
+      data: {
+        name: user.name, role: user.role, id: user.id 
+      }
+    });
   } catch (error) {
     next(error);
   }

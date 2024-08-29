@@ -1,19 +1,11 @@
 const { Bookmark, Movie, User } = require("../models");
 
-const getUserIdFromToken = (token) => {
-  try {
-    return JSON.parse(atob(token.split(" ")[1].split(".")[1])).id;
-  } catch (error) {
-    throw new Error("Invalid token");
-  }
-};
-
 exports.index = async (req, res, next) => {
-  const reqUserId = getUserIdFromToken(req.headers.authorization);
+  const userId = req.user.id;
 
   const options = {
     include: ["movie"],
-    where: reqUserId ? { userId: reqUserId } : {},
+    where: { userId },
   };
 
   try {
@@ -26,7 +18,7 @@ exports.index = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   const { id } = req.params;
-  const reqUserId = getUserIdFromToken(req.headers.authorization);
+  const userId = req.user.id;
 
   try {
     const movie = await Movie.findOne({ where: { id } });
@@ -36,26 +28,29 @@ exports.create = async (req, res, next) => {
     }
 
     const [bookmark, created] = await Bookmark.findOrCreate({
-      where: { movieId: id, userId: reqUserId },
-      defaults: { movieId: id, userId: reqUserId },
+      where: { movieId: id, userId },
     });
 
     if (!created) {
-      return res.status(200).json({
+      return res.status(409).json({
         message: "Bookmark already exists",
-        id: bookmark.id,
-        userId: bookmark.userId,
-        movieId: bookmark.movieId,
-        movie: movie.title,
+        data: {
+          id: bookmark.id,
+          userId: bookmark.userId,
+          movieId: bookmark.movieId,
+          movie: movie.title,
+        }
       });
     }
 
     res.status(201).json({
       message: "Success adding new bookmark",
-      id: bookmark.id,
-      userId: bookmark.userId,
-      movieId: bookmark.movieId,
-      movie: movie.title,
+      data: {
+        id: bookmark.id,
+        userId: bookmark.userId,
+        movieId: bookmark.movieId,
+        movie: movie.title,
+      }
     });
   } catch (error) {
     next(error);

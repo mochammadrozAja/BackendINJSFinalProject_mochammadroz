@@ -1,6 +1,7 @@
 const { verify } = require("jsonwebtoken");
+const { User } = require("../models");
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -21,7 +22,8 @@ const auth = (req, res, next) => {
     }
 
     const decoded = verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach decoded user to request object
+    const user = await User.findOne({ where: { email: decoded.email } });
+    req.user = user; // Attach decoded user to request object
     next();
   } catch (error) {
     console.error("Authentication error:", error);
