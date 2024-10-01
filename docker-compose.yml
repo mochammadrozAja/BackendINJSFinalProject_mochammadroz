@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: app
+    restart: always
+    environment:
+      - JWT_SECRET=inirahasiabanget
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=final_project
+      - DB_USER=postgres
+      - DB_PASS=postgres
+
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app #host:container
+      - /app/node_modules
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - 54321:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
